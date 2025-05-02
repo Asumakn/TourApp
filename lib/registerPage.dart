@@ -1,5 +1,6 @@
 
 import 'package:finalprojectapp/main.dart';
+import 'package:finalprojectapp/settingsPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'mainPage.dart';
@@ -18,7 +19,7 @@ class _myAppRegisterState extends State<myAppRegister> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(title: Text("Register Page",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),backgroundColor: Colors.blue,),
+      appBar: AppBar(centerTitle: true,title: Text("Register Page",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),backgroundColor: ThemeColor.main,),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:finalprojectapp/chooseDestinationsPage.dart';
 import 'package:finalprojectapp/datePickPage.dart';
+import 'package:finalprojectapp/profilePage.dart';
+import 'package:finalprojectapp/settingsPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,12 +35,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: "/main",
+      initialRoute: "/Home",
       routes: {
         "/": (context)=>myAppLogin(),
-        "/main":(context)=>myAppMain(user:new User.all(username: "username", password: "password")),
+        "/Home":(context)=>myAppMain(),
         "/register": (context)=> myAppRegister(),
-        "/date": (context)=> datePickPage()
+        "/date": (context)=> datePickPage(),
+        "/dest": (context)=> chooseDestinationPage(city: new City(name: "Munich", Lng: 48.137154, Lat: 11.576124), tour: tour),
+        "/Profile": (context)=> profilePage.user(User.all(username: "username", password: "password")),
+        "/Settings": (context)=> settingsPage(),
       },
 
     );
@@ -76,7 +81,7 @@ class _myAppLoginState extends State<myAppLogin> {
 
 
     return  Scaffold(
-      appBar: AppBar(title: Text("Login Page",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),backgroundColor: Colors.blue,),
+      appBar: AppBar(centerTitle: true,title: Text("Login Page",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),backgroundColor: Colors.blue,),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -115,7 +120,8 @@ SizedBox(
             if(usernameController.text == item.username){
             if(passwordController.text == item.password){
             _clear();
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>myAppMain( user: item,)));
+            myAppMain.user=item;
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>myAppMain()));
             }
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password is Incorrect")));
             }

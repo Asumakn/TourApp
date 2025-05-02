@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'DataController.dart';
 import 'chooseDestinationsPage.dart';
+import 'settingsPage.dart';
 
 class chooseLocationPage extends StatelessWidget {
   Tour currentTour;
@@ -18,16 +19,17 @@ class chooseLocationPage extends StatelessWidget {
           side: BorderSide(color: Colors.black, width: 1),
           borderRadius: BorderRadius.circular(5),
         ),
-        onTap: () {
-          currentTour.location = city1.name;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) =>
-                      chooseDestinationPage(city: city1, tour: currentTour),
-            ),
-          );
+        onTap: () async{
+
+         currentTour.location = city1.name;
+         Navigator.push(
+           context,
+           MaterialPageRoute(
+             builder:
+                 (context) =>
+                 chooseDestinationPage(city: city1, tour: currentTour),
+           ),
+         );
         },
         title: Text(
           city1.name,
@@ -39,12 +41,12 @@ class chooseLocationPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar(centerTitle: true,
         title: Text(
           "Choose a City to Explore ",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: ThemeColor.main,
       ),
       body: Center(
         child: Column(

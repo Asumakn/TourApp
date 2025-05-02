@@ -5,18 +5,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'DataController.dart';
+import 'profilePage.dart';
+import 'settingsPage.dart';
 
 class myAppMain extends StatelessWidget {
-  User user;
+  static User user = new User();
 
   final Stream<QuerySnapshot> tours =
       FirebaseFirestore.instance.collection('tours').snapshots();
-  myAppMain({required this.user});
 
+  myAppMain();
+
+
+List<BottomNavigationBarItem> items = [BottomNavigationBarItem(icon: Icon(Icons.person,color: Colors.white,),label: "Profile",),BottomNavigationBarItem(icon: Icon(Icons.home,color: Colors.white),label: "Home",backgroundColor: Colors.white),BottomNavigationBarItem(icon: Icon(Icons.settings,color: Colors.white),label: "Settings")];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      bottomNavigationBar: BottomNavigationBar(onTap: (int index){
+        Navigator.pushNamed(context,"/${items[index].label}");
+      },items: items,backgroundColor: ThemeColor.main,selectedItemColor: CupertinoColors.activeBlue, ),
+      appBar: AppBar(centerTitle: true,
         title: Text(
           " Welcome ${user.username}",
           style: TextStyle(
@@ -25,7 +33,7 @@ class myAppMain extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: ThemeColor.main,
       ),
       body: Center(
         child: Column(
@@ -34,7 +42,7 @@ class myAppMain extends StatelessWidget {
           children: [
             Container(
               height: 270,
-              decoration: BoxDecoration(color: Colors.lightBlueAccent),
+              decoration: BoxDecoration(color: ThemeColor.secondary),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -43,11 +51,11 @@ class myAppMain extends StatelessWidget {
                     elevation: 5,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.lightBlueAccent,
+                        color: ThemeColor.secondary,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           width: 3,
-                          color: Colors.lightBlueAccent,
+                          color: ThemeColor.secondary,
                         ),
                       ),
                       child: SizedBox(
@@ -64,10 +72,10 @@ class myAppMain extends StatelessWidget {
                                   ),
                                 );
                               },
-                              child: Icon(Icons.car_rental, size: 110),
+                              child: Icon(Icons.travel_explore, size: 110),
                             ),
                             Text(
-                              "Local",
+                              "Plan a Trip",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -98,6 +106,7 @@ class myAppMain extends StatelessWidget {
               ),
             ),
             Expanded(
+
               child: StreamBuilder<QuerySnapshot>(
                 stream: tours,
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -108,14 +117,17 @@ class myAppMain extends StatelessWidget {
 
                   var snaps = snapshot.data!.docs.toList();
                   return ListView.builder(
+
                     itemCount: snaps.length,
                     itemBuilder: (BuildContext context, int index) {
-
-                      return _tile(
-                        new Tour.all(
-                          location: snaps[index].get("Location"),
-                          startDate: DateTime.parse(snaps[index].get("startDate").toString()),
-                          endDate: DateTime.parse(snaps[index].get("endDate").toString()),
+                      return Container(
+                        height: 110,
+                        child: _tile(
+                          new Tour.all(
+                            location: snaps[index].get("Location"),
+                            startDate: DateTime.parse(snaps[index].get("startDate").toString()),
+                            endDate: DateTime.parse(snaps[index].get("endDate").toString()),
+                          ),
                         ),
                       );
                     },
@@ -131,21 +143,30 @@ class myAppMain extends StatelessWidget {
 }
 
 _tile(Tour tour) {
-  return Material(
-    elevation: 5,
-    borderRadius: BorderRadius.circular(20),
-    child: ListTile(
-      title: Text(
-        "Tour in ${tour.location}",
-        style: TextStyle(fontWeight: FontWeight.bold),
+  return Column(
+    children: [
+      Material(
+        elevation: 5,
+        borderRadius: BorderRadius.circular(20),
+        child: ListTile(
+          onTap: (){},
+          selectedColor: ThemeColor.secondary,
+          title: Text(
+            "Tour in ${tour.location}",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            "From ${DateFormat('yyyy-MM-dd').format(tour.startDate)} to ${DateFormat('yyyy-MM-dd').format(tour.endDate)}",
+          ),
+          trailing: Text(
+            tour.destinations.length.toString(),
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
-      subtitle: Text(
-        "From ${DateFormat('yyyy-MM-dd').format(tour.startDate)} to ${DateFormat('yyyy-MM-dd').format(tour.endDate)}",
-      ),
-      trailing: Text(
-        tour.destinations.length.toString(),
-        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-      ),
-    ),
+      SizedBox(
+        height: 15,
+      )
+    ],
   );
 }

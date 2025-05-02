@@ -7,18 +7,19 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'DataController.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'settingsPage.dart';
 
 List<Widget> drawerList = [];
-
-Set<Marker> markers = createMarkers();
-
-Set<Marker> createMarkers() {
-  final CollectionReference cities = FirebaseFirestore.instance
-      .collection('cities').where('name',isEqualTo: 'Munich').firestore.collection("destinations");
-  cities.snapshots().forEach((snapshot) {
-    var snaps = snapshot.docs;
+ Set<Marker> markers = {};
+final CollectionReference cities = FirebaseFirestore.instance
+    .collection('cities').doc("AgHwrJcHXMjeYUcNBq8u").collection("destinations");
+ Set<Marker>  createMarkers() {
+  print('Markers created');
+  cities.snapshots().forEach((snapshot)  {
+  var  snaps = snapshot.docs;
     Set<Marker> markers = HashSet();
-    for (var item in snaps) {
+    for (var item in snaps.toList()) {
+      print(item.get("name")+' added');
       markers.add(
         Marker(
           infoWindow: InfoWindow(
@@ -28,12 +29,13 @@ Set<Marker> createMarkers() {
             },
           ),
           markerId: MarkerId(item.get("name")),
-          position: LatLng(item.get("lat"), item.get("lng")),
+          position: LatLng(double.parse(item.get("lat")), double.parse(item.get("lng"))),
         ),
       );
     }
   });
 
+  drawerList.add(ListTile(title: Text(markers.toString()+" asd"),));
   return markers;
 }
 
@@ -46,7 +48,7 @@ class chooseDestinationPage extends StatefulWidget {
   @override
   State<chooseDestinationPage> createState() => _chooseDestinationPageState();
 }
-
+int times = 0;
 class _chooseDestinationPageState extends State<chooseDestinationPage> {
   late GoogleMapController mapController;
 
@@ -54,8 +56,11 @@ class _chooseDestinationPageState extends State<chooseDestinationPage> {
     mapController = controller;
   }
 
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
+
+
     _myDrawerOptions(name, route) {
       return ListTile(
         title: Text(name),
@@ -69,22 +74,31 @@ class _chooseDestinationPageState extends State<chooseDestinationPage> {
 
     drawerList = [
       DrawerHeader(
-        decoration: BoxDecoration(color: Colors.blue),
+        decoration: BoxDecoration(color: ThemeColor.main),
         child: Column(
           children: [Text('Drawer Header'), Icon(Icons.pin_drop, size: 100)],
         ),
       ),
-      _myDrawerOptions("Save Trip", "/main"),
+      _myDrawerOptions("Save Trip", "/Home"),
+    ListTile(
+    title: Text("Show"),
+    onTap: ()
+  {
+    setState(()  {
+      markers =  createMarkers();
+    });
+    }
+    ),
     ];
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar(centerTitle: true,
         title: Text(
           'Plan Your Trip in ${widget.city.name} ',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         elevation: 2,
-        backgroundColor: Colors.blue,
+        backgroundColor: ThemeColor.main,
       ),
       drawer: NavigationDrawer(children: drawerList),
       body: GoogleMap(
@@ -93,7 +107,7 @@ class _chooseDestinationPageState extends State<chooseDestinationPage> {
           target: LatLng(widget.city.Lng, widget.city.Lat),
           zoom: 11.0,
         ),
-        markers: createMarkers(),
+        markers: markers  ,
       ),
     );
   }
